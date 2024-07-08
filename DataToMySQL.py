@@ -38,7 +38,6 @@ def map_dtype(dtype):
     else:
         return "VARCHAR(255)"
 
-# Generate the CREATE TABLE statement
 table_name = "pokemon"
 create_table_query = f"CREATE TABLE IF NOT EXISTS pokemon.{table_name} (id INT AUTO_INCREMENT PRIMARY KEY, "
 
