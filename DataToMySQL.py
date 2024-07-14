@@ -13,8 +13,9 @@ username = config['main']['username']
 password = config['main']['password']
 
 # Load your dataframe
-df = pd.read_csv('pokemon.csv')
+df = pd.read_csv('pokemon2.csv')
 
+print(df.columns)
 # Connect to MySQL
 db = sql.connect(
     host="localhost",
@@ -25,7 +26,7 @@ db = sql.connect(
 
 
 cursor = db.cursor()
-cursor.execute("CREATE DATABASE IF NOT EXISTS pokemon")
+cursor.execute("CREATE DATABASE IF NOT EXISTS pokemon2")
 
 # Function to map pandas dtypes to MySQL data types
 def map_dtype(dtype):
@@ -38,8 +39,8 @@ def map_dtype(dtype):
     else:
         return "VARCHAR(255)"
 
-table_name = "pokemon"
-create_table_query = f"CREATE TABLE IF NOT EXISTS pokemon.{table_name} (id INT AUTO_INCREMENT PRIMARY KEY, "
+table_name = "pokemon2"
+create_table_query = f"CREATE TABLE IF NOT EXISTS pokemon2.{table_name} (id INT AUTO_INCREMENT PRIMARY KEY, "
 
 for column in df.columns:
     col_type = map_dtype(df[column].dtype)
@@ -52,7 +53,7 @@ cursor.execute(create_table_query)
 
 
 url_friendly_psswrd = urllib.parse.quote_plus(password)
-engine = create_engine(f'mysql+mysqlconnector://{username}:{url_friendly_psswrd}@localhost:3306/pokemon')
+engine = create_engine(f'mysql+mysqlconnector://{username}:{url_friendly_psswrd}@localhost:3306/pokemon2')
 
 # Write the dataframe to the MySQL table
 df.to_sql(name=table_name, con=engine, if_exists='replace', index=False)
