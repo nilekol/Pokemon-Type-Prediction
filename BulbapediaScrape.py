@@ -5,6 +5,8 @@ import re
 import pandas as pd
 import string
 import numpy as np
+import urllib.parse
+import string
 
 pokemon_list = []
 
@@ -25,10 +27,12 @@ columns = [
 df = pd.DataFrame(columns=columns)
 
 
-with open('pokemon_scraper/pokemon_names.csv', 'r') as file:
+with open('pokemon_scraper/pokemon_names.csv', 'r', encoding='utf-8') as file:
     reader = csv.reader(file)
     for row in reader:
         pokemon_list.append(''.join(row))
+
+
 
 # Declaring variables to scrape
 def roman_to_int(roman):
@@ -58,6 +62,8 @@ def map_experience_growth(exp):
     }
     return experience_growth.get(exp, None)
 for pokemon in pokemon_list[1:]:
+    
+    
 
     abilities = []
     against_bug = against_dark = against_dragon = against_electric = against_fairy = against_fight = against_fire = against_flying = against_ghost = against_grass = against_ground = against_ice = against_normal = against_poison = against_psychic = against_rock = against_steel = against_water = 1.0
@@ -66,12 +72,18 @@ for pokemon in pokemon_list[1:]:
     height_m = weight_kg = percentage_male = 0.0
     is_legendary = 0
 
+    
     url = f'https://bulbapedia.bulbagarden.net/wiki/{pokemon}_(Pok%C3%A9mon)'
+    
+
+
     html = requests.get(url)
     
+
     s = BeautifulSoup(html.text, 'html.parser')
 
     result = s.find('table', class_='roundy')
+    
     if result is not None:
         
         #print(s.encode('utf-8'))
@@ -135,7 +147,7 @@ for pokemon in pokemon_list[1:]:
             type2 = pokemon_type.get_text().lower()
         else:
             type1 = s.find(string = re.compile(r"\) is (a|an) ")).find_next('a').get_text().split("-")[0].lower()
-            type2 = None
+            type2 = ""
 
         #Check if the pokemon is legendary or mythical
         if "Mythical Pokémon introduced" in s.text or "Legendary Pokémon introduced" in s.text:
@@ -247,7 +259,7 @@ for pokemon in pokemon_list[1:]:
             percentage_male = percentage_male_link.find_next('span').find_next("span").find_next("span").get_text().split()[0][:-1].strip()
 
             if "Gender unknown" in s.text:
-                percentage_male = None
+                percentage_male = -1
             
             #Extract the pokedex number of the Pokemon
             pokedex_number = pokedex_number_link.find_next('span').get_text().split(":")[0][1:].strip()
@@ -381,10 +393,8 @@ for pokemon in pokemon_list[1:]:
                     against_ghost = 0
                 if immunity == "Ground":
                     against_ground = 0
-            
 
 
-                
     else:
         print(f"No table found for {pokemon}")
 
