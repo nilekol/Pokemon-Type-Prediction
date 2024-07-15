@@ -139,15 +139,15 @@ for pokemon in pokemon_list[1:]:
 
         
         #Extracting the Pokemon's type
-        if  s.find(string = ") is a dual-type ") is not None:
         
-            pokemon_type = s.find(string = ") is a dual-type ").find_next('a')
-            type1 = pokemon_type.get_text().lower()
-            pokemon_type = pokemon_type.find_next('a')
-            type2 = pokemon_type.get_text().lower()
-        else:
-            type1 = s.find(string = re.compile(r"\) is (a|an) ")).find_next('a').get_text().split("-")[0].lower()
-            type2 = ""
+        type1 = s.find("a", href=re.compile(r"\/wiki\/(.+?)_\(type\)"))
+        type1_text = type1.get_text().lower()
+
+        type2 = type1.find_next("a", href=re.compile(r"\/wiki\/(.+?)_\(type\)"))
+        type2_text = type2.get_text().lower()
+
+        if type2_text == "unknown":
+            type2_text = ""
 
         #Check if the pokemon is legendary or mythical
         if "Mythical Pokémon introduced" in s.text or "Legendary Pokémon introduced" in s.text:
@@ -403,8 +403,8 @@ for pokemon in pokemon_list[1:]:
     data = {
         'name': pokemon,
         'abilities': abilities,
-        'type1': type1,
-        'type2': type2,
+        'type1': type1_text,
+        'type2': type2_text,
         'is_legendary': is_legendary,
         'japanese_name': japanese_name,
         'hp': hp,
@@ -461,7 +461,12 @@ print(df.tail(5))
     
 df.to_csv('pokemon2.csv', index=False)    
 
-#Issues: Flabebe, Nidoran Male and Nidoran Female cannot be loaded
+#Issues: 
 #        Does not have seperate entries for alternate forms of a Pokemon (including Mega Evolution)
+#        Find a better way to get their generation of origin.
+#        Find a more efficient way of extracting the Pokemon's type effectiveness
 
-#Solution: Replace the special characters with their respective unicode characters
+#Solution: 
+
+#        Search for text "[POKEMON] can Mega Evolve into Mega [POKEMON]". This is how we will know that a Pokemon has a Mega Evolution
+#        Search for stats/abilities/typing of the pokemon if it's in the same section where "Mega [POKEMON]" is mentioned
